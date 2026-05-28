@@ -86,7 +86,7 @@ namespace BrowserGuard
 
         private void Log(string message)
         {
-            var text = $"{DateTime.Now:HH:mm:ss} {message}{Environment.NewLine}";
+            var text = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {message}{Environment.NewLine}";
             if (logTextBox.InvokeRequired)
             {
                 logTextBox.BeginInvoke(new Action(() => logTextBox.AppendText(text)));
