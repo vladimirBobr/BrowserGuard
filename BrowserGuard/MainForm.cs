@@ -152,6 +152,10 @@ namespace BrowserGuard
             workTimer = new System.Windows.Forms.Timer();
             workTimer.Interval = checkInterval;
             workTimer.Tick += WorkerMethod;
+            
+            // First check immediately, then start timer
+            WorkerMethod(null, null);
+            
             workTimer.Start();
             Log($"Monitoring started (interval: {checkInterval}ms)");
         }
