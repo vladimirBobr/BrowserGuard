@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace BrowserGuard
@@ -17,6 +18,7 @@ namespace BrowserGuard
         private int checkInterval = 5000; // Default: 5 seconds
 
         private const string AppName = "BrowserGuard";
+        private static readonly string LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "browserguard.log");
 
         public MainForm()
         {
@@ -26,7 +28,25 @@ namespace BrowserGuard
             LoadConfig();
             SetupTrayIcon();
             SetupLogTextBox();
+            LoadLogHistory();
             StartWorker();
+        }
+
+        private void LoadLogHistory()
+        {
+            if (File.Exists(LogFilePath))
+            {
+                try
+                {
+                    var lines = File.ReadAllLines(LogFilePath);
+                    var lastLines = lines.Length > 100 ? string.Join(Environment.NewLine, lines, lines.Length - 100, 100) : string.Join(Environment.NewLine, lines);
+                    logTextBox.AppendText(lastLines + Environment.NewLine);
+                }
+                catch
+                {
+                    // Ignore errors reading log file
+                }
+            }
         }
 
         private void LoadConfig()
@@ -89,11 +109,24 @@ namespace BrowserGuard
             var text = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {message}{Environment.NewLine}";
             if (logTextBox.InvokeRequired)
             {
-                logTextBox.BeginInvoke(new Action(() => logTextBox.AppendText(text)));
+                logTextBox.BeginInvoke(new Action(() => LogToTextBoxAndFile(text)));
             }
             else
             {
-                logTextBox.AppendText(text);
+                LogToTextBoxAndFile(text);
+            }
+        }
+
+        private void LogToTextBoxAndFile(string text)
+        {
+            logTextBox.AppendText(text);
+            try
+            {
+                File.AppendAllText(LogFilePath, text);
+            }
+            catch
+            {
+                // Ignore file write errors
             }
         }
 
