@@ -22,6 +22,7 @@ namespace BrowserGuard
         {
             // InitializeComponent() removed - all UI is created programmatically
             this.Icon = IconHelper.CreateColoredIcon();
+            this.Size = new Size(1200, 700);
             LoadConfig();
             SetupTrayIcon();
             SetupLogTextBox();
